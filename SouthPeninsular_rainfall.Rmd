@@ -1,0 +1,115 @@
+---
+title: "Rainfall in South peninsular region in India"
+author: "N.S.K"
+date: '2022-05-23'
+output:
+  html_document:
+    df_print: paged
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+libraries=c("MASS","lattice","flexdashboard","DT","ggplot2","dplyr","corrplot")
+lapply(libraries,require,character.only=TRUE)
+rainfall=read.csv(file.path("C:/Users/SENTHILKUMAR/Downloads/south_pen-India_rainfall_act_dep_1901_2016.csv"),header=T)
+attach(rainfall)
+```
+
+# Home {.tabset}
+
+Rainfall in South Peninsula (10 subdivisions) and its departure from normal for Monsoon Session (June-Sept) from 1901 to 2016 in India
+
+Column {.tabset .tabset-fade}
+-------------------------------------------------------------------------------
+
+### Summary
+
+```{r fig.height=10}
+summary(rainfall)
+```
+
+### Structure
+
+```{r}
+str(rainfall)
+```
+
+# Visualization 
+
+Column {.tabset .tabset-fade}
+-------------------------------------------------------------------------------
+
+### Basic Plot {.tabset}
+
+Actual Rainfall of JUNE-SEPTEMBER
+
+```{r fig.height=12, fig.width=13}
+par(mfrow=c(2,2),mar=c(4,4,3,2))
+plot(YEAR,Actual.Rainfall..JUN,pch=1,main = "JUNE")
+plot(YEAR,Actual.Rainfall..JUL,pch=2,main = "JULY")
+plot(YEAR,Actual.Rainfall..AUG,pch=3,main = "AUGUST")
+plot(YEAR,Actual.Rainfall..SEPT,pch=4,main = "SEPTEMBER")
+```
+
+
+### Box Plot 
+
+```{r}
+boxplot(Actual.Rainfall..JUN,Actual.Rainfall..JUL,Actual.Rainfall..AUG,Actual.Rainfall..SEPT,names = c("JUNE","JULY","AUGUST","SEPTEMBER"),col = c("red","seagreen","tan","cyan"),xlab="Months",main="Actual Rainfall from JUNE - SEPTEMBER")
+```
+
+### Histogram
+
+Departure Rainfall of JUNE - SEPTEMBER
+
+```{r fig.height=12, fig.width=12, paged.print=TRUE}
+par(mfrow=c(2,2),mar=c(4,4,4,0))
+hist(Departure.Percentage..JUN,breaks = 10, main = "Percentage of Rainfall in JUNE",col = "lightblue",col.main="black")
+hist(Departure.Percentage..JUL,breaks = 10, main = "Percentage of Rainfall in JULY",col = "lightblue1",col.main="black")
+hist(Departure.Percentage..AUG,breaks = 10, main = "Percentage of Rainfall in AUGUST",col = "lightblue2",col.main="black")
+hist(Departure.Percentage..SEP,breaks = 10, main = "Percentage of Rainfall in SEPTEMBER",col = "lightblue3",col.main="black")
+```
+
+### Correlation
+
+Correlation between the year 1952-2002
+
+```{r}
+year_1952_02=rainfall %>%
+  dplyr::filter(YEAR>=1952,YEAR<2003)
+```
+
+```{r fig.height=8, fig.width=13}
+corrplot(cor(year_1952_02),method = "number",shade.col = NA,tl.srt = 45)
+```
+
+### Bar Chart
+
+Actual Rainfall from JUNE 1952 - SEPTEMBER 2002 
+
+```{r fig.height=12, fig.width=12}
+ggplot(year_1952_02,aes(x=YEAR,y=Actual.Rainfall..JUN.SEPT,col=YEAR))+
+  geom_col(fill="gray70")+
+  theme_minimal()
+```
+
+
+# Download 
+
+### Chart C
+```{r}
+value=mean(rainfall$Actual.Rainfall..JUN.SEPT)
+valueBox("Average rainfall from JUNE-SEPTEMBER(m.m)",value,icon = "fa fa-user")
+```
+
+### The Rainfall Dataset
+
+```{r fig.height=20, fig.width=15, paged.print=TRUE}
+datatable(rainfall,extensions = 'Buttons',options=list(dom="Bfrtip",buttons=c('copy','print','pdf','csv')))
+```
+
+### Source URL of the Dataset
+
+Open Government Data (OGD) Platform India
+
+https://data.gov.in/resource/rainfall-south-peninsula-10-subdivisions-and-its-departure-normal-monsoon-session-june-0#
